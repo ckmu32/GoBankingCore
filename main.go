@@ -3,12 +3,16 @@ package main
 import (
 	"net/http"
 
-	accountServiceX "github.com/ckmu32/GoBankingCore/service"
+	accountServiceX "github.com/ckmu32/GoBankingCore/services"
 )
 
 func main() {
-	http.HandleFunc("/", controller) //This URL responds with this method.
-	http.HandleFunc("/account", accountServiceX.AddAccount)
+	//http.HandleFunc("/", controller) //This URL responds with this method.
+	http.HandleFunc("/account/add", accountServiceX.AddAccount)
+	http.HandleFunc("/account/all", accountServiceX.GetAccounts)
+	http.HandleFunc("/account/one", accountServiceX.GetAccount)
+	http.HandleFunc("/account/cancel", accountServiceX.CancelAccount)
+	http.HandleFunc("/account/update", accountServiceX.UpdateAccount)
 	http.ListenAndServe(":8080", nil)
 }
 
