@@ -27,6 +27,10 @@ func AddAccount(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Unprocessable Entity"))
 		return
 	}
+
+	//Check that the account does not exists.
+	//Check that the cardHolder exists.
+
 	account.Number = "125532634636"
 	s, _ := json.Marshal(account)
 	w.Header().Add("Content-Type", "application/json") //Must be before the http code assignation.
