@@ -12,30 +12,34 @@ import (
 var validate *validator.Validate
 
 // AddAccount Let's us add a new account. Responds to POST.
-func AddAccount(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		w.Write([]byte("Method not allowed"))
-		return
-	}
-
-	account := models.Account{}
-	err := json.NewDecoder(r.Body).Decode(&account)
-	if err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		w.Write([]byte("Unprocessable Entity"))
-		return
-	}
+func AddAccount(account *models.Account) interface{} {
 
 	//Check that the account does not exists.
 	//Check that the cardHolder exists.
 
-	account.Number = "125532634636"
+	/*
+		account.Number = "125532634636"
+		s, _ := json.Marshal(account)
+		w.Header().Add("Content-Type", "application/json") //Must be before the http code assignation.
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(s))
+	*/
+	var errorOccurred = true
+
+	response := models.OperationResponse{}
+
+	if errorOccurred {
+		response.Code = http.StatusUnprocessableEntity
+		response.Description = "Errors ocurred."
+		response.Errors = append(response.Errors, "Something weird happened.")
+		return response
+	}
+
 	s, _ := json.Marshal(account)
-	w.Header().Add("Content-Type", "application/json") //Must be before the http code assignation.
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(s))
+	response.Code = http.StatusCreated
+	response.Description = s
+
+	return response
 }
 
 // GetAccount Obtain one account according to the account number. Responds to GET.
