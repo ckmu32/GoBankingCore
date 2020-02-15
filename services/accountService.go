@@ -11,8 +11,8 @@ import (
 
 var validate *validator.Validate
 
-// AddAccount Let's us add a new account. Responds to POST.
-func AddAccount(account *models.Account) interface{} {
+// AddAccount Let's us add a new account.
+func AddAccount(account *models.Account) models.OperationResponse {
 
 	//Check that the account does not exists.
 	//Check that the cardHolder exists.
@@ -24,7 +24,7 @@ func AddAccount(account *models.Account) interface{} {
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(s))
 	*/
-	var errorOccurred = true
+	var errorOccurred = false
 
 	response := models.OperationResponse{}
 
@@ -35,9 +35,81 @@ func AddAccount(account *models.Account) interface{} {
 		return response
 	}
 
-	s, _ := json.Marshal(account)
+	account1 := models.Account{
+		Level:            "4",
+		Type:             "Paycheck",
+		CardHolderID:     78826,
+		ExternalAccount:  "346332563343498",
+		Number:           "12412354",
+		Status:           "ACTIVE",
+		AvailableBalance: 350.50,
+		RealBalance:      320,
+	}
+
 	response.Code = http.StatusCreated
-	response.Description = s
+	response.Description = account1
+	/*
+			{
+		    "Code": 201,
+		    "Description": "eyJudW1iZXIiOiIxMjQxMjM1NCIsImNhcmRfaG9sZGVyX2lkIjo3ODgyNiwidHlwZSI6IlBheWNoZWNrIiwiZXh0ZXJuYWxfYWNjb3VudCI6IjM0NjMzMjU2MzM0MzQ5OCIsImxldmVsIjoiNCIsImF2YWlsYWJsZV9iYWxhbmNlIjozNTAuNSwicmVhbF9iYWxhbmNlIjozMjAsInN0YXR1cyI6IkFDVElWRSIsImNyZWF0aW9uX2RhdGUiOiIiLCJjcmVhdGlvbl9ob3VyIjoiIiwiY3JlYXRpb25fdXNlciI6IiIsIm1vZmljYXRpb25fZGF0ZSI6IiIsIm1vZmljYXRpb25faG91ciI6IiIsIm1vZGlmaWNhdGlvbl91c2VyIjoiIn0=",
+		    "Errors": null
+		}
+	*/
+
+	/*
+
+
+			{
+		    "Code": 422,
+		    "Description": "Errors ocurred.",
+		    "Errors": [
+		        "Something weird happened."
+		    ]
+		}
+					{
+				    "Code": 201,
+				    "Description": {
+							cuenta{
+								"number": "12412354",
+								"card_holder_id": 78826,
+								"type": "Paycheck",
+								"external_account": "346332563343498",
+								"level": "4",
+								"available_balance": 350.5,
+								"real_balance": 320,
+								"status": "ACTIVE",
+								"creation_date": "",
+								"creation_hour": "",
+								"creation_user": "",
+								"mofication_date": "",
+								"mofication_hour": "",
+								"modification_user": ""
+							}
+				    },
+				    "Errors": null
+				}
+
+							{
+				    "Code": 201,
+				    "Description": {
+				        "number": "12412354",
+				        "card_holder_id": 78826,
+				        "type": "Paycheck",
+				        "external_account": "346332563343498",
+				        "level": "4",
+				        "available_balance": 350.5,
+				        "real_balance": 320,
+				        "status": "ACTIVE",
+				        "creation_date": "",
+				        "creation_hour": "",
+				        "creation_user": "",
+				        "mofication_date": "",
+				        "mofication_hour": "",
+				        "modification_user": ""
+				    },
+				    "Errors": null
+				}
+	*/
 
 	return response
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/ckmu32/GoBankingCore/services"
 )
 
+// AddAccount Let's us add a new account. Responds to POST.
 func AddAccount(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
@@ -23,6 +24,26 @@ func AddAccount(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Unprocessable Entity"))
 		return
 	}
-	//20 74
-	services.AddAccount(&account)
+
+	response := services.AddAccount(&account)
+
+	s, _ := json.Marshal(response)
+
+	/*
+		s, _ := json.Marshal(struct {
+			Code        int         `json:"code"`
+			Description interface{} `json:"cuentas"`
+			Errors      []string
+		}{
+			Code:        response.Code,
+			Description: response.Description,
+			Errors:      response.Errors,
+		},
+		)
+	*/
+
+	w.Header().Add("Content-Type", "application/json") //Must be before the http code assignation.
+	w.WriteHeader(response.Code)
+	w.Write(s)
+
 }
