@@ -16,14 +16,6 @@ func AddAccount(account *models.Account) models.OperationResponse {
 
 	//Check that the account does not exists.
 	//Check that the cardHolder exists.
-
-	/*
-		account.Number = "125532634636"
-		s, _ := json.Marshal(account)
-		w.Header().Add("Content-Type", "application/json") //Must be before the http code assignation.
-		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(s))
-	*/
 	var errorOccurred = false
 
 	response := models.OperationResponse{}
@@ -48,68 +40,6 @@ func AddAccount(account *models.Account) models.OperationResponse {
 
 	response.Code = http.StatusCreated
 	response.Description = account1
-	/*
-			{
-		    "Code": 201,
-		    "Description": "eyJudW1iZXIiOiIxMjQxMjM1NCIsImNhcmRfaG9sZGVyX2lkIjo3ODgyNiwidHlwZSI6IlBheWNoZWNrIiwiZXh0ZXJuYWxfYWNjb3VudCI6IjM0NjMzMjU2MzM0MzQ5OCIsImxldmVsIjoiNCIsImF2YWlsYWJsZV9iYWxhbmNlIjozNTAuNSwicmVhbF9iYWxhbmNlIjozMjAsInN0YXR1cyI6IkFDVElWRSIsImNyZWF0aW9uX2RhdGUiOiIiLCJjcmVhdGlvbl9ob3VyIjoiIiwiY3JlYXRpb25fdXNlciI6IiIsIm1vZmljYXRpb25fZGF0ZSI6IiIsIm1vZmljYXRpb25faG91ciI6IiIsIm1vZGlmaWNhdGlvbl91c2VyIjoiIn0=",
-		    "Errors": null
-		}
-	*/
-
-	/*
-
-
-			{
-		    "Code": 422,
-		    "Description": "Errors ocurred.",
-		    "Errors": [
-		        "Something weird happened."
-		    ]
-		}
-					{
-				    "Code": 201,
-				    "Description": {
-							cuenta{
-								"number": "12412354",
-								"card_holder_id": 78826,
-								"type": "Paycheck",
-								"external_account": "346332563343498",
-								"level": "4",
-								"available_balance": 350.5,
-								"real_balance": 320,
-								"status": "ACTIVE",
-								"creation_date": "",
-								"creation_hour": "",
-								"creation_user": "",
-								"mofication_date": "",
-								"mofication_hour": "",
-								"modification_user": ""
-							}
-				    },
-				    "Errors": null
-				}
-
-							{
-				    "Code": 201,
-				    "Description": {
-				        "number": "12412354",
-				        "card_holder_id": 78826,
-				        "type": "Paycheck",
-				        "external_account": "346332563343498",
-				        "level": "4",
-				        "available_balance": 350.5,
-				        "real_balance": 320,
-				        "status": "ACTIVE",
-				        "creation_date": "",
-				        "creation_hour": "",
-				        "creation_user": "",
-				        "mofication_date": "",
-				        "mofication_hour": "",
-				        "modification_user": ""
-				    },
-				    "Errors": null
-				}
-	*/
 
 	return response
 }
@@ -122,6 +52,8 @@ func GetAccount(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Method not allowed"))
 		return
 	}
+
+	retrievedAccount := repositories.accountRepository.GetByNumber("1212121212")
 
 	account1 := models.Account{
 		Level:            "4",
@@ -229,4 +161,17 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte("Record updated"))
+}
+
+func validAccount(account *models.Account, response *models.OperationResponse) bool {
+	validate = validator.New()
+	//Or this way witout declaration.
+	//validate _= validator.New()
+	structError := validate.Struct(account)
+
+	for _, e := range structError.(validator.ValidationErrors) {
+		fmt.Println(e)
+	}
+
+	return true
 }
