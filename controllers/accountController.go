@@ -47,3 +47,27 @@ func AddAccount(w http.ResponseWriter, r *http.Request) {
 	w.Write(s)
 
 }
+
+// GetAccount Obtain one account according to the account number. Responds to GET.
+func GetAccount(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		//Set Error description
+		w.Write([]byte("Method not allowed"))
+		return
+	}
+	response := models.OperationResponse{}
+	retrievedAccount := services.GetAccount("1212121212", &response)
+
+	if len(response.Errors) > 0 {
+		s, _ := json.Marshal(response)
+		w.Header().Add("Content-Type", "application/json")
+		w.Write([]byte(s))
+		return
+	}
+
+	s, _ := json.Marshal(retrievedAccount)
+	w.Header().Add("Content-Type", "application/json")
+	w.Write([]byte(s))
+}

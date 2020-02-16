@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ckmu32/GoBankingCore/models"
+	"github.com/ckmu32/GoBankingCore/repositories"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -16,59 +17,72 @@ func AddAccount(account *models.Account) models.OperationResponse {
 
 	//Check that the account does not exists.
 	//Check that the cardHolder exists.
-	var errorOccurred = false
 
 	response := models.OperationResponse{}
 
+	if exists(account.Number, &response) {
+		return response
+	}
+
+	/* TRASH
+	var errorOccurred = false
 	if errorOccurred {
 		response.Code = http.StatusUnprocessableEntity
 		response.Description = "Errors ocurred."
 		response.Errors = append(response.Errors, "Something weird happened.")
 		return response
 	}
+	*/
 
-	account1 := models.Account{
-		Level:            "4",
-		Type:             "Paycheck",
-		CardHolderID:     78826,
-		ExternalAccount:  "346332563343498",
-		Number:           "12412354",
-		Status:           "ACTIVE",
-		AvailableBalance: 350.50,
-		RealBalance:      320,
+	//TEMP
+	account.CreationUser = "TELLER_0"
+	account.ModificationUser = "TELLER_O"
+
+	// account1 := models.Account{
+	// 	Level:            "4",
+	// 	Type:             "Paycheck",
+	// 	CardHolderID:     78826,
+	// 	ExternalAccount:  "346332563343498",
+	// 	Number:           "12412354",
+	// 	Status:           "ACTIVE",
+	// 	AvailableBalance: 350.50,
+	// 	RealBalance:      320,
+	// }
+
+	var inserted = repositories.Insert(account, &response)
+
+	if inserted {
+		response.Code = http.StatusCreated
+		response.Description = account
 	}
-
-	response.Code = http.StatusCreated
-	response.Description = account1
 
 	return response
 }
 
+// exists Checks if the account exists on the DB.
+func exists(number string, response *models.OperationResponse) bool {
+	var retrieved = repositories.GetByNumber(number, response)
+	// This is the only code we used to check if everything is correct.
+	if response.Code == http.StatusNotFound {
+		response.Errors = nil
+		return false
+	}
+
+	// If the record was retrieved, we check by comparing the account and if its equal we set a specific error.
+	if retrieved.Number == number {
+		response.Code = http.StatusUnprocessableEntity
+		response.Description = "Errors occurred."
+		response.Errors = append(response.Errors, "The account already exists.")
+	}
+	return true
+}
+
 // GetAccount Obtain one account according to the account number. Responds to GET.
-func GetAccount(w http.ResponseWriter, r *http.Request) {
+func GetAccount(number string, response *models.OperationResponse) models.Account {
 
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		w.Write([]byte("Method not allowed"))
-		return
-	}
+	retrievedAccount := repositories.GetByNumber("1212121212", response)
 
-	retrievedAccount := repositories.accountRepository.GetByNumber("1212121212")
-
-	account1 := models.Account{
-		Level:            "4",
-		Type:             "Paycheck",
-		CardHolderID:     78826,
-		ExternalAccount:  "346332563343498",
-		Number:           "12412354",
-		Status:           "ACTIVE",
-		AvailableBalance: 350.50,
-		RealBalance:      320,
-	}
-
-	s, _ := json.Marshal(account1)
-	w.Header().Add("Content-Type", "application/json")
-	w.Write([]byte(s))
+	return retrievedAccount
 }
 
 // GetAccounts Obtain all accounts . Responds to GET.
