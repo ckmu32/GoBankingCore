@@ -11,7 +11,7 @@ func main() {
 	//http.HandleFunc("/", controller) //This URL responds with this method.
 	http.HandleFunc("/account/add", controllers.AddAccount)
 	http.HandleFunc("/account/all", accountServiceX.GetAccounts)
-	http.HandleFunc("/account/one", accountServiceX.GetAccount)
+	http.HandleFunc("/account/one", controllers.GetAccount)
 	http.HandleFunc("/account/cancel", accountServiceX.CancelAccount)
 	http.HandleFunc("/account/update", accountServiceX.UpdateAccount)
 	http.ListenAndServe(":8080", nil)
